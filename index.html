@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Every color in</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body style="background-color: #181818">
+    <div class="jumbotron jumbotron-fluid text-light" style="background-color: #080808">
+      <div class="container">
+        <h1 class="display-4">Every color in</h1>
+<!--        <p class="lead">Visualize the colors in the text</p>-->
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-11">
+                <textarea id="input-text" style="min-height: 200px; max-height: 200px" type="text" class="form-control rounded-pil hide-scrollbar" placeholder="Load your text here and press enter!"></textarea>
+
+            </div>
+            <div class="col-1">
+                <div class="btn-group-vertical btn-block">
+                    <button id="clear-btn" class="btn btn-dark btn-block"><i class="fas fa-times"></i></button>
+                    <button id="upload-btn" class="btn btn-dark btn-block"><i class="fas fa-upload"></i></button>
+                    <input id="hidden-file-input" type="file" class="custom-file-input" id="customFile" accept="text/plain" hidden>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-11">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="loading-div" class="text-center d-none">
+                            <i class="fas text-light fa-palette fa-spin fa-5x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div id="color-list">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1">
+                <select id="database-size" class="form-control text-light bg-dark">
+                    <option>M</option>
+                    <option>S</option>
+                    <option>XL</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="colors_json.js"></script>
+    <script src="colors_utilities.js"></script>
+    <script>
+        let default_size = $('#database-size').val();
+        var colors = get_name_colors_json(default_size);
+        console.log(colors);
+
+        function showLoading(html_id){
+            $('#'+html_id).removeClass("d-none");
+            clear_div('color-list');
+        }
+
+        function hideLoading(html_id){
+            $('#'+html_id).addClass("d-none");
+        }
+
+        function process_textarea(){
+            $.when(showLoading("loading-div")).then( function(){
+                let text = $('#input-text').val();
+                text_to_colors_div('color-list',colors,text);
+                hideLoading("loading-div");
+            });
+        }
+
+        function clear_div(html_div_id){
+            $('#'+html_div_id).html('');
+        }
+
+        $('#input-text').on('keypress',function(e) {
+            if(e.keyCode == 13 && !event.shiftKey ){ //The user has pressed enter (and not shift+enter)
+                process_textarea();
+            }
+        });
+
+        $('#clear-btn').on('click',function(){
+            $('#input-text').val('');
+        });
+
+        $('#upload-btn').on('click',function(){
+            $('#hidden-file-input').click();
+        });
+
+        $('#hidden-file-input').change(function() {
+
+            var fr=new FileReader();
+            fr.onload=function(){
+                let text = fr.result;
+                $('#input-text').val(text);
+            }
+
+            fr.readAsText(this.files[0]);
+        });
+
+        $('#database-size').change(function() {
+            let size = $('#database-size').val();
+            colors = get_name_colors_json(size);
+            console.log(colors);
+            process_textarea();
+        });
+
+    </script>
+</body>
+</html>
