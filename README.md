@@ -9,4 +9,4 @@ every-color-in lets you try to achieve a similiar result with any text of your c
 
 ## Try it
 To try it out: download all the files and open 'index.html' .
-// In the future I may deploy it for a live demo.
+In the future I may deploy it for a live demo.
